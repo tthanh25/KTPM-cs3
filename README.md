@@ -84,7 +84,9 @@ Cách 2:
      ``` unzip gatling-charts-highcharts-bundle-3.2.0-bundle.zip```
      * Tạo 2 file test về goldprice.scala và foreigncurrency.scala:
     
-     * ```package test
+```
+//goldprice.scala
+package test
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -110,8 +112,11 @@ class ApiTest extends Simulation {
   setUp(
     scn.inject(atOnceUsers(100)) // Tải ngay lập tức 100 user
   ).protocols(httpProtocol)
-} ```
-     * ```package test
+}
+```
+```
+//foreigncurrency.scala
+package test
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
@@ -136,7 +141,9 @@ class ForeignCurrencyTest extends Simulation {
   setUp(
     scn.inject(atOnceUsers(100)) // Tải ngay lập tức 100 user
   ).protocols(httpProtocol)
-} ```
+} 
+```
+
      * Các bạn chạy lệnh ```./bin/gatling.sh```
      * Chọn số ứng với 2 file goldprice.scala và foreigncurrency.scala  
      * Ctrl + C để hủy lệnh.
