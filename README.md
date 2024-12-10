@@ -71,4 +71,72 @@ Cách 2:
 ![image](https://github.com/user-attachments/assets/156347e8-7093-47e8-9a6b-e7665ed7e396)
 ![image](https://github.com/user-attachments/assets/21cfe4c9-e97b-4bb4-9cb8-32d91bca9bdd)
 
+**Phần 3:**
+ - Thực hành kiểm thử hiệu năng với Gatling:
+   + Gọi 10000 request với 100 VUser khác nhau.
+   + Các biểu đồ chi tiết về các request tới API về status code, lượng request,...
+   + Các docker chứa API Endpoint sẽ chạy với thông số từ 10-15% CPU, MEMORY...
+   + Kịch bản test: Các bạn cài đặt Gatling trên ubuntu.
+     * Cài đặt gói JDK 8 --Java SE Development Kit 8-- (chỉ hỗ trợ bản này):
+     ```sudo apt install openjdk-8-jdk -y```
+     * Tải gói Gatling về và giải nén:
+     ``` wget https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/3.2.0/gatling-charts-highcharts-bundle-3.2.0-bundle.zip```
+     ``` unzip gatling-charts-highcharts-bundle-3.2.0-bundle.zip```
+     * Tạo 2 file test về goldprice.scala và foreigncurrency.scala:
+    
+     * ```package test
 
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import scala.concurrent.duration._
+
+class ApiTest extends Simulation {
+
+  // Cấu hình HTTP
+  val httpProtocol = http
+    .baseUrl("http://localhost:3008") // Địa chỉ API
+    .acceptHeader("application/json") // Header chấp nhận
+    .contentTypeHeader("application/json") // Header nội dung
+
+  // Kịch bản gửi request
+  val scn = scenario("API Test Scenario")
+    .repeat(10000) { // Lặp lại 10000 lần
+      exec(http("Get Data")
+        .get("/your-endpoint") // Thay "/your-endpoint" bằng endpoint thực tế của bạn
+        .check(status.is(200))) // Kiểm tra status code
+    }
+
+  // Thiết lập tải
+  setUp(
+    scn.inject(atOnceUsers(100)) // Tải ngay lập tức 100 user
+  ).protocols(httpProtocol)
+} ```
+     * ```package test
+
+import io.gatling.core.Predef._
+import io.gatling.http.Predef._
+import scala.concurrent.duration._
+
+class ForeignCurrencyTest extends Simulation {
+
+  // Cấu hình HTTP
+  val httpProtocol = http
+    .baseUrl("http://localhost:3009") // Địa chỉ API
+    .acceptHeader("application/json") // Header chấp nhận
+
+  // Kịch bản gửi request
+  val scn = scenario("Foreign Currency API Test Scenario")
+    .repeat(10000) { // Lặp lại 10000 lần
+      exec(http("Get Foreign Currency")
+        .get("/api/foreign-currency") // Endpoint thực tế
+        .check(status.is(200))) // Kiểm tra status code
+    }
+
+  // Thiết lập tải
+  setUp(
+    scn.inject(atOnceUsers(100)) // Tải ngay lập tức 100 user
+  ).protocols(httpProtocol)
+} ```
+     * Các bạn chạy lệnh ```./bin/gatling.sh```
+     * Chọn số ứng với 2 file goldprice.scala và foreigncurrency.scala  
+     * Ctrl + C để hủy lệnh.
